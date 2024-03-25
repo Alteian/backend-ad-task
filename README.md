@@ -1,11 +1,5 @@
 # Granian - Backend
 
-## Table of Contents
-
-- [Installation](#installation)
-
-## Installation
-
 Fresh install cmd:
 
 ```bash
