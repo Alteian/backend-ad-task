@@ -1,0 +1,77 @@
+version: "3.9"
+name: awesome-developers
+
+services:
+  web:
+    container_name: web
+    env_file:
+      - ../src/settings/envs/.local
+    build:
+      context: ../
+      dockerfile: dockerfiles/Dockerfile
+    volumes:
+      - ../:/app
+    networks:
+      - web-network
+      - redis-network
+      - db-network
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+  db:
+    container_name: db
+    restart: unless-stopped
+    image: postgres:latest
+    env_file:
+      - ../src/settings/envs/.local
+    volumes:
+      - ../scripts/database:/scripts/
+      - postgres_data:/var/lib/postgresql/data/
+      - /tmp:/backups
+
+    networks:
+      - db-network
+    ports:
+      - 5432:5432
+  redis:
+    container_name: redis
+    image: redis:latest
+    networks:
+      - redis-network
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+  celery:
+    container_name: celery
+    build:
+      context: ../
+      dockerfile: dockerfiles/Dockerfile.celery
+    env_file:
+      - ../src/settings/envs/.local
+    depends_on:
+      - db
+      - redis
+    networks:
+      - web-network
+      - redis-network
+      - db-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  web-network:
+    driver: bridge
+    ipam:
+      driver: default
+  redis-network:
+    driver: bridge
+    ipam:
+      driver: default
+  db-network:
+    driver: bridge
+    ipam:
+      driver: default

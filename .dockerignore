@@ -1,0 +1,11 @@
+.venv
+.gitignore
+.gitlab-ci.yml
+LICENSE
+README.md
+.git
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.mypy_cache
