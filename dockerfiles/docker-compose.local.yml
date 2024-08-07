@@ -1,14 +1,14 @@
-version: "3.9"
 name: awesome-developers
 
 services:
   web:
-    container_name: web
+    container_name: awesome-developers-web
     env_file:
       - ../src/settings/envs/.local
     build:
       context: ../
       dockerfile: dockerfiles/Dockerfile
+      target: local-stage
     volumes:
       - ../:/app
     networks:
@@ -20,7 +20,7 @@ services:
     depends_on:
       - db
   db:
-    container_name: db
+    container_name: awesome-developers-db
     restart: unless-stopped
     image: postgres:latest
     env_file:
@@ -35,7 +35,7 @@ services:
     ports:
       - 5432:5432
   redis:
-    container_name: redis
+    container_name: awesome-developers-redis
     image: redis:latest
     networks:
       - redis-network
@@ -44,10 +44,11 @@ services:
     volumes:
       - redis_data:/data
   celery:
-    container_name: celery
+    container_name: awesome-developers-celery
     build:
       context: ../
-      dockerfile: dockerfiles/Dockerfile.celery
+      dockerfile: dockerfiles/Dockerfile
+      target: celery-stage
     env_file:
       - ../src/settings/envs/.local
     depends_on:
